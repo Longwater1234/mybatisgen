@@ -32,7 +32,7 @@ required to adjust some SQL queries inside `dbutil.go` to match your Database sy
 - Then execute the built program `./mybatisgen`
 - Type your DB Password (Hidden, will not be stored!). Hit Enter.
 - After a short while, the finished result will be saved in `output/` folder.
-- Now you can inspect & copy content from `output/` into your Java SpringBoot Project. Done.
+- Done. Now you can inspect & copy content from `output/` into your SpringBoot Project. 
 
 ## How it works (Overview)
 

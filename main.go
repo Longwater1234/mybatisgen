@@ -173,7 +173,6 @@ func main() {
 	GenerateCommonFiles(innerBaseDir, config.TargetPackage)
 
 	log.Println("All is OK! OutputDir:", absOutputDir)
-	fmt.Println()
 }
 
 // initialize db Connectiono, with given credentials
