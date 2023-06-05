@@ -1,21 +1,31 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
+# Intellij project files
+*.iml
+*.ipr
+*.iws
+.idea/
+mybatisgen.zip
+!assets/
+
+# go.gitignore from https://github.com/github/gitignore/blob/master/Go.gitignore
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+mybatisgen
 
 # Test binary, built with `go test -c`
 *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+.vscode/
+output/
+
+#MyBatis generatorConfig (contains sensitive INFO)
+assets/generatorConfig.xml
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-
-# Go workspace file
 go.work
