@@ -68,6 +68,8 @@ func check(err error) {
 }
 
 var tt *template.Template
+var reportSqlFile *os.File
+var BuffWriter *bufio.Writer
 
 func init() {
 	templatePath := filepath.Join(TemplateDir, "genConfig.gohtml")
@@ -80,6 +82,13 @@ func main() {
 	f, err := os.Open(dbConfigPath)
 	check(err)
 	defer f.Close()
+
+	reportSqlFile, err = os.Create("create_Stmt.sql")
+	check(err)
+	defer reportSqlFile.Close()
+
+	BuffWriter = bufio.NewWriter(reportSqlFile)
+	defer BuffWriter.Flush()
 
 	jd := json.NewDecoder(f)
 	var config ProjectConfig
@@ -175,7 +184,7 @@ func main() {
 	log.Println("All is OK! OutputDir:", absOutputDir)
 }
 
-// initialize db Connectiono, with given credentials
+// initialize db Connection, with given credentials
 func initDbConn(myConn *DbCredentials) (*sql.DB, error) {
 	var dsn string = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		myConn.User, myConn.Password, myConn.Host, myConn.Port, myConn.Database)

@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"regexp"
 	"strings"
 	"sync"
@@ -52,7 +51,7 @@ var foreignRegex = regexp.MustCompile("FOREIGN KEY \\(`\\w+`\\) REFERENCES `(\\w
 var primaryNameRegex = regexp.MustCompile("PRIMARY KEY \\(`(\\w+)`\\),?")
 
 // will match dataType of PK
-var primaryPattern = "`%s` (\\w+)\\("
+var primaryPattern = "`%s` (\\w+)\\(?"
 
 // GetTableNames from given database
 func GetTableNames(dbConn *sql.DB) ([]string, error) {
@@ -109,9 +108,8 @@ func getTablePrimaryKey(tableName, createStmt string, mu *sync.Mutex) string {
 		matchArr := primaryNameRegex.FindStringSubmatch(br.Text())
 		if len(matchArr) > 0 {
 			regPKType := regexp.MustCompile(fmt.Sprintf(primaryPattern, matchArr[1]))
-			ioutil.WriteFile("haha/"+tableName+".sql", []byte(createStmt), 0644)
 			typeResults := regPKType.FindStringSubmatch(createStmt)
-			if len(typeResults) > 0 {
+			if typeResults != nil {
 				var sqlType = typeResults[1]
 				pkItem.PkType = sqlJavaTypes[sqlType]
 				pkItem.PkName = strcase.ToLowerCamel(matchArr[1])
@@ -121,6 +119,8 @@ func getTablePrimaryKey(tableName, createStmt string, mu *sync.Mutex) string {
 	pascalTableName := strcase.ToCamel(tableName) //actually, it's Pascal Case
 	mu.Lock()
 	pkTableMap[pascalTableName] = *pkItem
+	fmt.Fprintln(BuffWriter, "-- regPKType", tableName)
+	fmt.Fprintln(BuffWriter, createStmt)
 	mu.Unlock()
 	return pkItem.PkName
 }
