@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry location="./{{.DriverName}}" />
+
+    <context id="dsql" targetRuntime="MyBatis3DynamicSql">
+        <property name="javaFileEncoding" value="UTF-8" />
+
+        <plugin type="com.codebox.codetemplate.plugin.LombokPlugin">
+        </plugin>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://{{.DbCredentials.Host}}:{{.DbCredentials.Port}}/{{.DbCredentials.Database}}?useSSL=false&amp;characterEncoding=utf8"
+                        userId="{{.DbCredentials.User}}" password="{{.DbCredentials.Password}}">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="true" />
+            <property name="useJSR310Types" value="true" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="{{.PackageName}}.model" targetProject="{{.OutFolder}}">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="{{.PackageName}}.mapperxml" targetProject="{{.OutFolder}}">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="{{.PackageName}}.mapper" targetProject="{{.OutFolder}}">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        {{range .TableList}}
+            <table tableName="{{.}}">
+                <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+            </table>
+        {{end}}
+    </context>
+</generatorConfiguration>

@@ -1,0 +1,105 @@
+package {{.TargetPackage}}.controller;
+
+import {{.TargetPackage}}.common.CustomResponse;
+import {{.TargetPackage}}.common.PageInfo;
+import {{.TargetPackage}}.mapper.{{.PascalName}}Mapper;
+import {{.TargetPackage}}.model.{{.PascalName}};
+import org.mybatis.dynamic.sql.select.CountDSLCompleter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+
+import static {{.TargetPackage}}.mapper.{{.PascalName}}DynamicSqlSupport.*;
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
+
+@RestController
+@RequestMapping(path = "/{{.CamelCase}}", produces = MediaType.APPLICATION_JSON_VALUE)
+public class {{.PascalName}}Controller {
+
+    @Autowired
+    private {{.PascalName}}Mapper {{.CamelCase}}Mapper;
+
+    @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CustomResponse> addNew{{.PascalName}}(@RequestBody @Valid {{.PascalName}} {{.CamelCase}}) {
+        try {
+            {{.CamelCase}}Mapper.insertSelective({{.CamelCase}});
+            return ResponseEntity.status(HttpStatus.CREATED).body(new CustomResponse({{.CamelCase}}.get{{.PkPascalName}}()));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "/batch", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CustomResponse> batchAdd{{.PascalName}}List(@RequestBody List<{{.PascalName}}> {{.CamelCase}}List) {
+        try {
+            int inserted = {{.CamelCase}}Mapper.insertMultiple({{.CamelCase}}List);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new CustomResponse(inserted));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "/id/{{`{`}}{{.PkCamelName}}{{`}`}}")
+    public ResponseEntity<{{.PascalName}}> get{{.PascalName}}By{{.PkPascalName}}(@PathVariable {{.PkType}} {{.PkCamelName}}) {
+        Optional<{{.PascalName}}> entityOptional = {{.CamelCase}}Mapper.selectByPrimaryKey({{.PkCamelName}});
+        return ResponseEntity.of(entityOptional);
+    }
+
+    @GetMapping(path = "/list")
+    public PageInfo<{{.PascalName}}> get{{.PascalName}}ListPaged(@RequestParam(defaultValue = "0") Long page,
+																@RequestParam(defaultValue = "10") Long size,
+																@RequestParam(defaultValue = "{{.PkCamelName}}") String orderBy) {
+        List<{{.PascalName}}> {{.CamelCase}}List = {{.CamelCase}}Mapper.select(rows -> rows.orderBy({{.CamelCase}}.column(orderBy))
+                .limit(size).offset(page * size));
+        long recordCount = {{.CamelCase}}Mapper.count(CountDSLCompleter.allRows());
+        PageInfo<{{.PascalName}}> pageInfo = new PageInfo<>();
+        pageInfo.setPageIndex(page);
+        pageInfo.setDataList({{.CamelCase}}List);
+        pageInfo.setRecordCount(recordCount);
+        pageInfo.setPageCount(recordCount / size);
+        return pageInfo;
+    }
+
+    @DeleteMapping(path ="/id/{{`{`}}{{.PkCamelName}}{{`}`}}")
+    public ResponseEntity<CustomResponse> delete{{.PascalName}}By{{.PkPascalName}}(@PathVariable {{.PkType}} {{.PkCamelName}}) {
+        int deleted = {{.CamelCase}}Mapper.deleteByPrimaryKey({{.PkCamelName}});
+        return ResponseEntity.ok().body(new CustomResponse(deleted));
+    }
+
+    @PutMapping(path ="/id/{{`{`}}{{.PkCamelName}}{{`}`}}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<CustomResponse> update{{.PascalName}}By{{.PkPascalName}}(@PathVariable {{.PkType}} {{.PkCamelName}}, @RequestBody {{.PascalName}} updatedEntity) {
+        {{.CamelCase}}Mapper.selectByPrimaryKey({{.PkCamelName}}).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "找不到指定的行")
+        );
+        updatedEntity.set{{.PkPascalName}}({{.PkCamelName}});
+        int count = {{.CamelCase}}Mapper.updateByPrimaryKeySelective(updatedEntity);
+        return ResponseEntity.ok().body(new CustomResponse(count));
+    }
+
+   {{range .FkRelationList}}
+    @GetMapping(path = "/{{.RefTableCamel}}/{fk}")
+    public PageInfo<{{.PascalName}}> get{{.PascalName}}sBy{{.RefTablePascal}}{{.RefPkPascal}}(@PathVariable Integer fk,
+                                                @RequestParam(defaultValue = "0") Long page,
+                                                @RequestParam(defaultValue = "10") Long size) {
+        List<{{.PascalName}}> {{.CamelCase}}List = {{.CamelCase}}Mapper.select(rows -> rows.where({{.RefTableCamel}}{{.RefPkPascal}}, isEqualTo(fk))
+                .orderBy({{.CamelCase}}.column("{{.PkCamelCase}}")).limit(size).offset(page * size));
+        long recordCount = {{.CamelCase}}Mapper.count(rows -> rows.where({{.RefTableCamel}}{{.RefPkPascal}}, isEqualTo(fk)));
+        PageInfo<{{.PascalName}}> pageInfo = new PageInfo<>();
+        pageInfo.setPageIndex(page);
+        pageInfo.setDataList({{.CamelCase}}List);
+        pageInfo.setRecordCount(recordCount);
+        pageInfo.setPageCount(recordCount / size);
+        return pageInfo;
+    }
+    {{end}}
+
+}

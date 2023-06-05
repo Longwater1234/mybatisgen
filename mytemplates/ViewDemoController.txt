@@ -1,0 +1,53 @@
+package {{.TargetPackage}}.controller;
+
+import {{.TargetPackage}}.common.CustomResponse;
+import {{.TargetPackage}}.common.PageInfo;
+import {{.TargetPackage}}.mapper.{{.PascalName}}Mapper;
+import {{.TargetPackage}}.model.{{.PascalName}};
+import org.mybatis.dynamic.sql.select.CountDSLCompleter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static {{.TargetPackage}}.mapper.{{.PascalName}}DynamicSqlSupport.*;
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
+
+
+@RestController
+@RequestMapping(path = "/{{.CamelCase}}")
+public class {{.PascalName}}Controller {
+
+    @Autowired
+    private {{.PascalName}}Mapper {{.CamelCase}}Mapper;
+
+
+    @GetMapping(path = "/id/{paramId}")
+    public ResponseEntity<CustomResponse> get{{.PascalName}}ById(@PathVariable Integer paramId) {
+        {{.PascalName}} entity = {{.CamelCase}}Mapper.selectOne(row -> row.where(id, isEqualTo(paramId))).orElse(null);
+        return ResponseEntity.ok().body(new CustomResponse(entity));
+    }
+
+    @GetMapping(path = "/list")
+    @Transactional(readOnly = true)
+    public PageInfo<{{.PascalName}}> get{{.PascalName}}ListPaged(@RequestParam(defaultValue = "0") Long page,
+																@RequestParam(defaultValue = "10") Long size,
+																@RequestParam(defaultValue = "id") String orderBy) {
+        List<{{.PascalName}}> {{.CamelCase}}List = {{.CamelCase}}Mapper.select(rows -> rows.orderBy({{.CamelCase}}.column(orderBy))
+                .limit(size).offset(page * size));
+        long recordCount = {{.CamelCase}}Mapper.count(CountDSLCompleter.allRows());
+        PageInfo<{{.PascalName}}> pageInfo = new PageInfo<>();
+        pageInfo.setPageIndex(page);
+        pageInfo.setDataList({{.CamelCase}}List);
+        pageInfo.setRecordCount(recordCount);
+        pageInfo.setPageCount(recordCount / size);
+        return pageInfo;
+    }
+
+}

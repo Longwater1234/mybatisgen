@@ -1,0 +1,22 @@
+package {{.}}.common;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+/**
+ * custom model for Paged data
+ *
+ */
+@Setter
+@Getter
+@NoArgsConstructor
+public class PageInfo<E> {
+    private final Boolean success = true;
+    private List<E> dataList;
+    private Long recordCount;
+    private Long pageIndex;
+    private Long pageCount;
+}

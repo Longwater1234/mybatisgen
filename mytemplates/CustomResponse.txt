@@ -1,0 +1,31 @@
+package {{.}}.common;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class CustomResponse {
+    private Boolean success;
+    private Object data;
+    private String message;
+
+    public CustomResponse(Boolean success, Object data) {
+        this.success = success;
+        this.data = data;
+    }
+
+    public CustomResponse(Object data) {
+        this.data = data;
+        this.success = true;
+    }
+
+    public static CustomResponse fail(String message) {
+        CustomResponse response = new CustomResponse();
+        response.success = false;
+        response.message = message;
+        return response;
+    }
+
+
+}
