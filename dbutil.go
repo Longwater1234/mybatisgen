@@ -119,8 +119,6 @@ func getTablePrimaryKey(tableName, createStmt string, mu *sync.Mutex) string {
 	pascalTableName := strcase.ToCamel(tableName) //actually, it's Pascal Case
 	mu.Lock()
 	pkTableMap[pascalTableName] = *pkItem
-	fmt.Fprintln(BuffWriter, "-- regPKType", tableName)
-	fmt.Fprintln(BuffWriter, createStmt)
 	mu.Unlock()
 	return pkItem.PkName
 }

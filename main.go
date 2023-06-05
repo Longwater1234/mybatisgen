@@ -68,8 +68,6 @@ func check(err error) {
 }
 
 var tt *template.Template
-var reportSqlFile *os.File
-var BuffWriter *bufio.Writer
 
 func init() {
 	templatePath := filepath.Join(TemplateDir, "genConfig.gohtml")
@@ -82,13 +80,6 @@ func main() {
 	f, err := os.Open(dbConfigPath)
 	check(err)
 	defer f.Close()
-
-	reportSqlFile, err = os.Create("create_Stmt.sql")
-	check(err)
-	defer reportSqlFile.Close()
-
-	BuffWriter = bufio.NewWriter(reportSqlFile)
-	defer BuffWriter.Flush()
 
 	jd := json.NewDecoder(f)
 	var config ProjectConfig
