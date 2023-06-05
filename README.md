@@ -1,6 +1,7 @@
 # mybatisgen
 
 Custom MyBatisGenerator written in Golang! 
+
 Generates _mapper_, _model_ (with Lombok annotations) and _controller_ files for a SpringBoot MyBatis project. Uses the
 original MyBatis Generator (MBG v1.4) under the hood. Please see
 the  [official MBG docs](https://mybatis.org/generator/) .By default, this works for MySQL only (v5.6 or higher).
@@ -12,7 +13,6 @@ required to adjust some SQL queries inside `dbutil.go` to match your Database sy
 - Go 1.18 or higher. (for building this project)
 - Java JRE 8 or higher. (for simply executing the JAR files).
 - Both above need to be in your SYSTEM PATH. Verify in your terminal, run:
-
 ```bash
   go version
   java --version
@@ -21,10 +21,9 @@ required to adjust some SQL queries inside `dbutil.go` to match your Database sy
 ## How to use
 
 - Rename file [env.sample.json](env.sample.json) --> `env.json`. Please ensure `env.json` is in .gitignore!
-- Edit file [env.json](env.json), replace with your Db credentials (**DON'T** include password!) and your Java/Kotlin
+- Edit file `env.json`, replace with your Db credentials (**DON'T include password!**) and your Java/Kotlin
   Springboot full package Name (e.g. `com.mycompany.projectName)`.
 - Inside your Terminal/CMD at this project's root directory, run the command below:
-
 ```bash
   go build
 ```
@@ -36,7 +35,7 @@ required to adjust some SQL queries inside `dbutil.go` to match your Database sy
 
 ## How it works (Overview)
 
-1. It reads Db credentials and Java project packageName from [env.json](env.json)
+1. It reads Db connection params and Java packageName from `env.json`. Accepts password from command line.
 2. Then connects to Database to get list of all tables, keys and relations.
 3. From the result from (1) and (2) above, it uses Go Templates to create the *generatorConfig.xml* file. (can be
    modified, see the [reference](https://mybatis.org/generator/configreference/xmlconfig.html))
