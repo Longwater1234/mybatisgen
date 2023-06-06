@@ -1,5 +1,7 @@
 # mybatisgen
 
+[README 中文](README_zh_CN.md)
+
 Custom MyBatisGenerator written in Golang! 
 
 Generates _mapper_, _model_ (with Lombok annotations) and _controller_ files for a SpringBoot MyBatis project. Uses the
