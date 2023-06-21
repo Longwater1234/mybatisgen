@@ -15,7 +15,6 @@ import (
 	"text/template"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/term"
 )
 
@@ -32,7 +31,7 @@ const (
 )
 
 // last modified date
-const buildDate = "2023-06-05"
+const versionDate = "2023-06-21"
 
 // DbCredentials for target db
 type DbCredentials struct {
@@ -88,7 +87,7 @@ func main() {
 	check(err)
 
 	fmt.Println("\n+=+=+=\tMyBATIS SPRINGBOOT CODE GENERATOR\t+=+=+=")
-	fmt.Printf("\t\t\t(version %s)\n\n", buildDate)
+	fmt.Printf("\t\t\t(version %s)\n\n", versionDate)
 	fmt.Print("Please enter database password (hidden): ")
 	dbPassBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
 	check(err)
@@ -174,6 +173,7 @@ func main() {
 	GenerateCommonFiles(innerBaseDir, config.TargetPackage)
 
 	log.Println("All is OK! OutputDir:", absOutputDir)
+	fmt.Println()
 }
 
 // initialize db Connection, with given credentials

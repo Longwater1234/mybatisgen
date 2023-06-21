@@ -55,8 +55,8 @@ func writeControllerFile(modelFile os.DirEntry, controllerDir, targetPackage str
 	if exists {
 		//for each foreign table, attach its Primary key name
 		for i, relation := range fkList {
-			parentPkItem := pkTableMap[relation.RefTablePascal]
-			relation.RefPkPascal = strcase.ToCamel(parentPkItem.PkName)
+			foreignPkItem := pkTableMap[relation.RefTablePascal]
+			relation.RefPkPascal = strcase.ToCamel(foreignPkItem.PkName)
 			fkList[i] = relation
 		}
 	}

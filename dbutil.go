@@ -15,12 +15,12 @@ import (
 
 // FkRelation is for foreign columns in given table
 type FkRelation struct {
-	RefTableCamel  string // ref table camelCase (parent)
-	RefTablePascal string // ref table PascalCase (parent)
-	RefPkPascal    string // PK of ref table  (parent)
-	PascalName     string // current table PascalCase
-	CamelCase      string // current table camelCase
-	PkCamelCase    string // PK of current table
+	RefTableCamel  string // foreign table camelCase (parent)
+	RefTablePascal string // foreign table PascalCase (parent)
+	RefPkPascal    string // PK of foreign table  (parent)
+	PascalName     string // current table name in PascalCase
+	CamelCase      string // current table name in camelCase
+	PkCamelCase    string // PRIMARY KEY of current table
 }
 
 // TablePrimaryKey name and type
@@ -109,11 +109,10 @@ func getTablePrimaryKey(tableName, createStmt string, mu *sync.Mutex) string {
 		if len(matchArr) > 0 {
 			regPKType := regexp.MustCompile(fmt.Sprintf(primaryPattern, matchArr[1]))
 			typeResults := regPKType.FindStringSubmatch(createStmt)
-			if typeResults != nil {
-				var sqlType = typeResults[1]
-				pkItem.PkType = sqlJavaTypes[sqlType]
-				pkItem.PkName = strcase.ToLowerCamel(matchArr[1])
-			}
+			var sqlType = typeResults[1]
+			pkItem.PkType = sqlJavaTypes[sqlType]
+			pkItem.PkName = strcase.ToLowerCamel(matchArr[1])
+			break
 		}
 	}
 	pascalTableName := strcase.ToCamel(tableName) //actually, it's Pascal Case
@@ -131,7 +130,7 @@ func showCreateStmt(dbConn *sql.DB, tableName string) (string, error) {
 	return c2, err
 }
 
-// GetDbVersion helps decide which driver to use
+// GetDbVersion helps decide which driver version to use
 func GetDbVersion(db *sql.DB) (string, error) {
 	var version string
 	err := db.QueryRowContext(context.Background(), "SELECT VERSION()").Scan(&version)
