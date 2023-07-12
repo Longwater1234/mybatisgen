@@ -12,18 +12,18 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-// used in the template
+// Represents table Entity
 type javaClass struct {
 	PkCamelName    string       // name of PK in camel Case
 	PkPascalName   string       //name of PK in Pascal Case
-	PkType         string       // javaType of primary Key
+	PkType         string       // java Type of primary Key
 	PascalName     string       // current table name
 	CamelCase      string       // current table name
 	TargetPackage  string       // e.g. com.example.projectName
 	FkRelationList []FkRelation // foreign key relations
 }
 
-// Mapping of tableType to Controller template file
+// Mapping of tableType to TemplateFile
 const (
 	NormalTable = "DemoController.txt"
 	ViewTable   = "ViewDemoController.txt"
@@ -45,15 +45,14 @@ func GenerateControllers(baseDir, targetPackage string) {
 	}
 }
 
-// customize content and save to file
+// write content and save to file
 func writeControllerFile(modelFile os.DirEntry, controllerDir, targetPackage string) {
 	var fullName = modelFile.Name()
-	cleanName := fullName[0:strings.Index(fullName, ".")]
+	cleanName := fullName[0:strings.Index(fullName, ".")] //without extension
 	var fkList, exists = fkRelationMap[cleanName]
-	var pkItem = pkTableMap[cleanName]
 
 	if exists {
-		//for each foreign table, attach its Primary key name
+		//for each foreign column, attach its Primary key name
 		for i, relation := range fkList {
 			foreignPkItem := pkTableMap[relation.RefTablePascal]
 			relation.RefPkPascal = strcase.ToCamel(foreignPkItem.PkName)
@@ -61,6 +60,7 @@ func writeControllerFile(modelFile os.DirEntry, controllerDir, targetPackage str
 		}
 	}
 
+	var pkItem = pkTableMap[cleanName]
 	singleClass := &javaClass{
 		PkType:         pkItem.PkType,
 		PkCamelName:    pkItem.PkName,
@@ -87,7 +87,7 @@ func writeControllerFile(modelFile os.DirEntry, controllerDir, targetPackage str
 	tc.Execute(bw, singleClass)
 }
 
-// GenerateCommonFiles for paging and http Response
+// GenerateCommonFiles for paging and generic Response
 func GenerateCommonFiles(baseDir string, targetPackage string) {
 	commonDir := filepath.Join(baseDir, "common")
 	os.Mkdir(commonDir, os.ModePerm)

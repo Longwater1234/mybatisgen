@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class CustomResponse {
-    private Boolean success;
+    private boolean success = true;
     private Object data;
     private String message;
 
@@ -17,7 +16,10 @@ public class CustomResponse {
 
     public CustomResponse(Object data) {
         this.data = data;
-        this.success = true;
+    }
+
+    public CustomResponse() {
+        this.message = "OK!";
     }
 
     public static CustomResponse fail(String message) {

@@ -31,7 +31,7 @@ const (
 )
 
 // last modified date
-const versionDate = "2023-06-21"
+const versionDate = "2023-07-04"
 
 // DbCredentials for target db
 type DbCredentials struct {
@@ -178,7 +178,7 @@ func main() {
 
 // initialize db Connection, with given credentials
 func initDbConn(myConn *DbCredentials) (*sql.DB, error) {
-	var dsn string = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		myConn.User, myConn.Password, myConn.Host, myConn.Port, myConn.Database)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

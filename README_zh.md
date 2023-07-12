@@ -3,7 +3,7 @@
 [README_en](README.md)
 
 用 Golang 编写的自定义 MyBatisGenerator！
-为 SpringBoot MyBatis 项目生成 _mapper_, _model_（带有 Lombok 注释）和 CRUD _controllers_ 。在引擎盖下使用原始的 MyBatis Generator (MBG v1.4)。请参阅[官方 MBG 文档](https://mybatis.org/generator/)。默认情况下，这仅适用于 MySQL（v5.6 或更高版本）。但是，您可以为其他 Db 供应商添加依赖项，然后更新 main.go / `initDbConn`函数。您可能还需要调整 `dbutil.go`中的一些 SQL 查询以适合您的 DBMS。
+为 SpringBoot MyBatis 项目生成 _mapper_, _model_（带有 Lombok 注释）和 CRUD _controllers_ 。在引擎盖下使用原始的 MyBatis Generator (MBG v1.4)。请参阅[官方 MBG 文档](https://mybatis.org/generator/)。默认情况下，这仅适用于 MySQL（v5.6+ 或更高版本）。但是，您可以为其他 Db 供应商添加依赖项，然后更新 main.go / `initDbConn`函数。您可能还需要调整 `dbutil.go`中的一些 SQL 查询以适合您的 DBMS。
 
 ## 要求
 
