@@ -22,7 +22,6 @@ mybatisgen
 *.out
 .vscode/
 output/
-/output
 
 #MyBatis generatorConfig (contains sensistive INFO)
 /assets/generatorConfig.xml
