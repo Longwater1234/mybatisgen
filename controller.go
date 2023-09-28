@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -15,7 +14,7 @@ import (
 // Represents table Entity
 type javaClass struct {
 	PkCamelName    string       // name of PK in camel Case
-	PkPascalName   string       //name of PK in Pascal Case
+	PkPascalName   string       // name of PK in Pascal Case
 	PkType         string       // java Type of primary Key
 	PascalName     string       // current table name
 	CamelCase      string       // current table name
@@ -31,8 +30,6 @@ const (
 
 // for testing table type
 var viewReg = regexp.MustCompile(`^View[A-Z]+?`)
-
-const filePattern = "%sController.java"
 
 // GenerateControllers for all tables
 func GenerateControllers(baseDir, targetPackage string) {
@@ -71,14 +68,14 @@ func writeControllerFile(modelFile os.DirEntry, controllerDir, targetPackage str
 		FkRelationList: fkList,
 	}
 
-	var tmplFileName = NormalTable
+	var templateFile = NormalTable
 	if viewReg.MatchString(cleanName) {
-		tmplFileName = ViewTable
+		templateFile = ViewTable
 	}
 
-	templatePath := filepath.Join(TemplateDir, tmplFileName)
-	tc := template.Must(template.New(tmplFileName).ParseFiles(templatePath))
-	fout, err := os.Create(filepath.Join(controllerDir, fmt.Sprintf(filePattern, cleanName)))
+	templatePath := filepath.Join(TemplateDir, templateFile)
+	tc := template.Must(template.New(templateFile).ParseFiles(templatePath))
+	fout, err := os.Create(filepath.Join(controllerDir, cleanName+"Controller.java"))
 	check(err)
 	defer fout.Close()
 

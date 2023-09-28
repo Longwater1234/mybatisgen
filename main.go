@@ -31,7 +31,7 @@ const (
 )
 
 // last modified date
-const versionDate = "2023-07-04"
+const versionDate = "2023-09-23"
 
 // DbCredentials for target db
 type DbCredentials struct {
@@ -145,7 +145,7 @@ func main() {
 	bw.Flush()
 	log.Println("Done creating generatorConfig.xml file")
 
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second)
 	log.Println("Starting MyBatisGenerator")
 
 	wkDir, _ := filepath.Abs(assetsDir)
@@ -159,7 +159,7 @@ func main() {
 		Path:   runCmd,
 		Dir:    wkDir,
 		Stdout: os.Stdout,
-		Stderr: os.Stdout,
+		Stderr: os.Stderr,
 	}
 	fmt.Println("Generating. Please wait...")
 	cmd.Start()

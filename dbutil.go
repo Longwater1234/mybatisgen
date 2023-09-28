@@ -35,7 +35,7 @@ var fkRelationMap = make(map[string][]FkRelation)
 // map of TableName to its PrimaryKey struct
 var pkTableMap = make(map[string]TablePrimaryKey)
 
-// common NySQL to JAVA typings for PK
+// common MySQL to JAVA typings for PK
 var sqlJavaTypes = map[string]string{
 	"varchar": "String",
 	"bigint":  "Long",
@@ -69,7 +69,7 @@ func GetTableNames(dbConn *sql.DB) ([]string, error) {
 	return tableList, nil
 }
 
-// GetForeignRelations within given table
+// GetForeignRelations within given table, ignore Views
 func GetForeignRelations(dbConn *sql.DB, tableName string, wg *sync.WaitGroup, mu *sync.Mutex) {
 	defer wg.Done()
 	if strings.HasPrefix(tableName, "view_") {
@@ -78,6 +78,7 @@ func GetForeignRelations(dbConn *sql.DB, tableName string, wg *sync.WaitGroup, m
 	var fkRelations []FkRelation
 	createStmt, err := showCreateStmt(dbConn, tableName)
 	check(err)
+	//TODO, read createStmt and if regexMatch `CREATE ...VIEW`, then return
 	camelPkName := getTablePrimaryKey(tableName, createStmt, mu)
 	br := bufio.NewScanner(strings.NewReader(createStmt))
 	for br.Scan() {
@@ -130,7 +131,7 @@ func showCreateStmt(dbConn *sql.DB, tableName string) (string, error) {
 	return c2, err
 }
 
-// GetDbVersion helps decide which driver version to use
+// GetDbVersion helps decide which driver to use
 func GetDbVersion(db *sql.DB) (string, error) {
 	var version string
 	err := db.QueryRowContext(context.Background(), "SELECT VERSION()").Scan(&version)
